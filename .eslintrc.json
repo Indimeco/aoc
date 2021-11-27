@@ -3,7 +3,8 @@
         "es2021": true
     },
     "extends": [
-        "google"
+        "google",
+        "plugin:prettier/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -11,7 +12,15 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "prettier"
     ],
-    "rules": {}
+    "rules": {
+        "no-unused-vars": [
+            "error",
+            {
+                "varsIgnorePattern": "_"
+            }
+        ]
+    }
 }
