@@ -1,16 +1,17 @@
+import { reduce } from "fp-ts/lib/Array";
+import { flow } from "fp-ts/lib/function";
+
 type directions = "forward" | "down" | "up";
 export type input = { direction: directions; count: number };
 
-export const solution = (input: input[]): number => {
-  const result = input.reduce(reducer, { horizontal: 0, depth: 0 });
-  return result.depth * result.horizontal;
-};
+type Solution = (input: input[]) => number;
+export const solution: Solution = flow(
+  reduce<input, accumulator>({ horizontal: 0, depth: 0 }, reducer),
+  (result) => result.depth * result.horizontal
+);
 
 type accumulator = { horizontal: number; depth: number };
-const reducer = (
-  previousValue: accumulator,
-  currentValue: input
-): accumulator => {
+function reducer(previousValue: accumulator, currentValue: input): accumulator {
   switch (currentValue.direction) {
     case "forward":
       return {
@@ -30,18 +31,18 @@ const reducer = (
     default:
       throw new Error("No direction");
   }
-};
+}
 
-export const solution2 = (input: input[]): number => {
-  const result = input.reduce(reducer2, { horizontal: 0, depth: 0, aim: 0 });
-  return result.horizontal * result.depth;
-};
+export const solution2: Solution = flow(
+  reduce<input, accumulator2>({ horizontal: 0, depth: 0, aim: 0 }, reducer2),
+  (result) => result.depth * result.horizontal
+);
 
 type accumulator2 = { horizontal: number; depth: number; aim: number };
-const reducer2 = (
+function reducer2(
   previousValue: accumulator2,
   currentValue: input
-): accumulator2 => {
+): accumulator2 {
   switch (currentValue.direction) {
     case "forward":
       return {
@@ -64,4 +65,4 @@ const reducer2 = (
     default:
       throw new Error("No direction");
   }
-};
+}
