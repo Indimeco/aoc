@@ -1,0 +1,32 @@
+import { input } from "./input";
+import { day, fishOverDays, solutionAlternative } from "./solution";
+
+test("should work", () => {
+  expect(day([1])).toEqual([0]);
+  expect(day([0])).toEqual([6, 8]);
+  expect(day([3, 4, 3, 1, 2])).toEqual([2, 3, 2, 0, 1]);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 1)).toEqual(5);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 2)).toEqual(6);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 3)).toEqual(7);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 4)).toEqual(9);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 5)).toEqual(10);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 6)).toEqual(10);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 7)).toEqual(10);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 8)).toEqual(10);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 9)).toEqual(11);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 10)).toEqual(12);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 11)).toEqual(15);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 12)).toEqual(17);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 13)).toEqual(19);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 14)).toEqual(20);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 15)).toEqual(20);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 16)).toEqual(21);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 17)).toEqual(22);
+  expect(solutionAlternative([3, 4, 3, 1, 2], 18)).toEqual(26);
+  expect(fishOverDays(0, 1)).toEqual(2);
+  expect(fishOverDays(6, 5)).toEqual(1);
+  expect(fishOverDays(1, 2)).toEqual(2);
+  expect(fishOverDays(2, 16)).toEqual(4);
+  // expect(solutionAlternative(input, 80)).toEqual(361169);
+  // expect(solutionAlternative(input, 256)).toEqual(1634946868992);
+});
