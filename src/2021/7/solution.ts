@@ -23,7 +23,7 @@ export const fuelCostCumulative = (
   return positions
     .map((x) =>
       [...Array.from(Array(Math.abs(x - toPosition) + 1).keys())].reduce(
-        (acc, cur, index) => {
+        (acc, cur) => {
           return acc + cur;
         },
         0
