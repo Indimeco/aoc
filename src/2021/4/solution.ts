@@ -1,25 +1,41 @@
-import { boolean } from "fp-ts";
-import { map, reduce, reduceWithIndex } from "fp-ts/lib/Array";
-import { flow, pipe } from "fp-ts/lib/function";
-import { findIndex } from "fp-ts/lib/ReadonlyArray";
+import { pipe, flow, identity } from "fp-ts/lib/function";
+import * as RoA from "fp-ts/lib/ReadonlyNonEmptyArray";
+import {
+  concat,
+  map,
+  mapWithIndex,
+  ReadonlyNonEmptyArray,
+} from "fp-ts/lib/ReadonlyNonEmptyArray";
 
-type Solution = (called: number[], boards: number[][]) => number;
+const getCol = (
+  colNum: number,
+  nestedArr: RoA.ReadonlyNonEmptyArray<RoA.ReadonlyNonEmptyArray<number>>
+): RoA.ReadonlyNonEmptyArray<number> =>
+  map((v: RoA.ReadonlyNonEmptyArray<number>) => v[colNum])(nestedArr);
 
-const getCol = (index: number, nestedArr: any[]) =>
-  nestedArr.map((v) => v[index]);
 // Part 1
-export const doesBoardWin = (called: number[], board: number[][]): boolean => {
-  const boardIncCols = [...board, ...board.map((v, i) => getCol(i, board))];
-  const results = boardIncCols.map((possibleWin) => {
-    if (
-      possibleWin.map((num) => called.includes(num)).filter((x) => x === false)
-        .length === 0
-    ) {
-      return true;
-    }
-    return false;
-  });
-  return results.includes(true);
+type BingoBoard = RoA.ReadonlyNonEmptyArray<RoA.ReadonlyNonEmptyArray<number>>;
+export const doesBoardWin = (
+  calledNumbers: ReadonlyNonEmptyArray<number>,
+  board: BingoBoard
+): boolean => {
+  return pipe(
+    board,
+    concat(
+      pipe(
+        board.length,
+        RoA.makeBy(identity),
+        mapWithIndex((i) => getCol(i, board))
+      )
+    ),
+    map(
+      flow(
+        map((boardPosition) => calledNumbers.includes(boardPosition)),
+        (possibleWin) => !possibleWin.some((x) => x === false)
+      )
+    ),
+    (result) => result.includes(true)
+  );
 };
 export const getWinningBoard = (
   called: number[],
