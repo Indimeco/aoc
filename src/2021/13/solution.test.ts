@@ -1,5 +1,5 @@
 import { input } from "./input2";
-import { solution, parseInput, foldY, foldX } from "./solution";
+import { solution, parseInput, foldY, foldX, solution2 } from "./solution";
 
 test("should work", () => {
   expect(
@@ -101,5 +101,8 @@ test("should work", () => {
     ).length
   ).toEqual(4);
 
-  expect(solution(input)).toEqual(true);
+  expect(foldY(parseInput(`9,10`), 7)).toEqual([[9, 4]]);
+
+  expect(solution(input)).toEqual(731);
+  expect(solution2(input)).toEqual(true);
 });

@@ -5,7 +5,7 @@ const binaryToDec = (input: string) => parseInt(input, 2);
 
 type frequencyAccumulator = Record<string, number>;
 type frequencyResultant = [string, number][];
-const frequency: (arr: number[]) => frequencyResultant = flow(
+export const frequency: (arr: number[]) => frequencyResultant = flow(
   reduce<string | number, frequencyAccumulator>({}, (accumulator, current) => ({
     ...accumulator,
     [current]: (accumulator[current] ?? 0) + 1,
