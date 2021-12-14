@@ -32,30 +32,30 @@ CN -> C`;
   expect(parseInstructions(testInstructions)[5]).toEqual(["HC", "B"]);
   expect(parseInstructions(testInstructions)[15]).toEqual(["CN", "C"]);
 
-  expect(await applyInstruction("NNCB", [["NN", "B"]])).toEqual("NBNCB");
+  // expect(await applyInstruction("NNCB", [["NN", "B"]])).toEqual("NBNCB");
 
-  expect(await applyInstruction("NNCB", parsedTestInstructions)).toEqual(
-    "NCNBCHB"
-  );
+  // expect(await applyInstruction("NNCB", parsedTestInstructions)).toEqual(
+  //   "NCNBCHB"
+  // );
 
-  expect(
-    await applyInstructionsTimes("NNCB", parsedTestInstructions, 1)
-  ).toEqual("NCNBCHB");
+  // expect(
+  //   await applyInstructionsTimes("NNCB", parsedTestInstructions, 1)
+  // ).toEqual("NCNBCHB");
 
-  expect(
-    await applyInstructionsTimes("NNCB", parsedTestInstructions, 2)
-  ).toEqual("NBCCNBBBCBHCB");
+  // expect(
+  //   await applyInstructionsTimes("NNCB", parsedTestInstructions, 2)
+  // ).toEqual("NBCCNBBBCBHCB");
 
-  expect(
-    await applyInstructionsTimes("NNCB", parsedTestInstructions, 4)
-  ).toEqual("NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB");
+  // expect(
+  //   await applyInstructionsTimes("NNCB", parsedTestInstructions, 4)
+  // ).toEqual("NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB");
 
   const tenth = await applyInstructionsTimes(
     "NNCB",
     parsedTestInstructions,
     10
   );
-  expect(tenth).toHaveLength(3073);
+  // expect(tenth).toHaveLength(3073);
 
   expect(maxMinusMin(tenth)).toEqual(1588);
 
@@ -77,5 +77,5 @@ CN -> C`;
         40
       )
     )
-  ).toEqual(true);
+  ).toEqual(4441317262452);
 });

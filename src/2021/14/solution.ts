@@ -1,5 +1,4 @@
 import { frequency } from "../3/solution";
-import { Transform, Readable } from "stream";
 
 export const parseInstructions = (input: string): [string, string][] =>
   // @ts-ignore
@@ -8,78 +7,101 @@ export const parseInstructions = (input: string): [string, string][] =>
     .split("\n")
     .map((x) => x.split("->").map((x) => x.trim()));
 
-export const applyInstruction = async (
+type PairCount = Record<string, number>;
+const applyInstructionInternal = (
+  initPairCount: PairCount,
+  instructions: [string, string][]
+) => {
+  const nextPairCount = { ...initPairCount };
+  instructions.reduce((pairCount, [instruction, insertion]): PairCount => {
+    const currentCount = pairCount[instruction];
+    if (currentCount > 0) {
+      nextPairCount[instruction] = nextPairCount[instruction] - currentCount;
+      nextPairCount[instruction[0] + insertion] =
+        (nextPairCount[instruction[0] + insertion] ?? 0) + currentCount;
+      nextPairCount[insertion + instruction[1]] =
+        (nextPairCount[insertion + instruction[1]] ?? 0) + currentCount;
+    }
+    return pairCount;
+  }, initPairCount);
+  return nextPairCount;
+};
+
+const createPairCount = (template: string) =>
+  Object.fromEntries(
+    frequency(
+      template
+        .split("")
+        .map((x, index) =>
+          template[index + 1] === undefined ? null : x + template[index + 1]
+        )
+        .filter((a) => a !== null)
+    )
+  );
+
+const createCharacterFrequencyFromPairCount = (
+  template: string,
+  pairCount: PairCount
+): Record<string, number> => {
+  const e = Object.entries(pairCount);
+  const allChars = Object.fromEntries(
+    "abcdefghijklmnopqrstuvwxyz"
+      .toUpperCase()
+      .split("")
+      .map((character) => {
+        const starts = e.filter(
+          ([[firstChar, secondChar], count]) => firstChar === character
+        );
+        const sum = starts.reduce((acc, [_, count]) => count + acc, 0);
+        // console.log(starts);
+        // const ends = e.filter(
+        //   ([[firstChar, secondChar], count]) => secondChar === character
+        // );
+        return [character, sum];
+      })
+      .filter(([char, count]) => count > 0)
+  );
+  // add the last char
+  allChars[template[template.length - 1]] =
+    allChars[template[template.length - 1]] + 1;
+  return allChars;
+};
+
+export const applyInstruction = (
   template: string,
   instructions: [string, string][]
 ) => {
-  const insObj = Object.fromEntries(instructions);
-  const inStream = new Readable();
-  console.log("constructing stream");
-  for (let i = 0; i <= template.length; i++) {
-    inStream.push(template[i]);
-  }
-  inStream.push(null);
-  console.log("done constructing stream");
-
-  let lastVal: string;
-  const insertIns = new Transform({
-    transform(chunk, encoding, callback) {
-      if (lastVal !== undefined) {
-        const pair = lastVal + chunk;
-        this.push(insObj[pair] ? insObj[pair] + chunk : chunk);
-      }
-      if (lastVal === undefined) {
-        this.push(chunk);
-      }
-      lastVal = chunk;
-
-      callback();
-    },
-  });
-  return readableToString(inStream.pipe(insertIns));
+  const a = createPairCount(template);
+  const appiled = applyInstructionInternal(a, instructions);
+  createCharacterFrequencyFromPairCount(template, appiled);
+  return appiled;
 };
 
 export const applyInstructionsTimes = async (
-  template: string,
+  initialTemplate: string,
   instructions: [string, string][],
-  times: number
+  times: number,
+  pairs?: PairCount
 ): Promise<string> => {
-  if (times === 0) {
-    return template;
+  if (!pairs) {
+    pairs = createPairCount(initialTemplate);
   }
-  console.log("times remaining: ", times);
-  const next = await applyInstruction(template, instructions);
-  return applyInstructionsTimes(next, instructions, times - 1);
+  if (times === 0) {
+    return createCharacterFrequencyFromPairCount(initialTemplate, pairs);
+  }
+  const nextPairs = applyInstructionInternal(pairs, instructions);
+  return applyInstructionsTimes(
+    initialTemplate,
+    instructions,
+    times - 1,
+    nextPairs
+  );
 };
 
-export const maxMinusMin = (str: string) => {
-  // @ts-ignore
-  const freq = frequency(str);
-  const min = Math.min(...freq.map(([key, count]) => count));
-  const max = Math.max(...freq.map(([key, count]) => count));
+export const maxMinusMin = (pairs: PairCount) => {
+  const pairEntries = Object.entries(pairs);
+  const min = Math.min(...pairEntries.map(([key, count]) => count));
+  const max = Math.max(...pairEntries.map(([key, count]) => count));
 
   return max - min;
 };
-
-async function readableToString(readable) {
-  console.log("reading stream");
-  let result = "";
-  for await (const chunk of readable) {
-    result += chunk;
-  }
-  console.log("done reading stream");
-  return result;
-}
-
-// const goDo = async () => {
-//   console.log(
-//     maxMinusMin(
-//       await applyInstructionsTimes(
-//         template,
-//         parseInstructions(instructions),
-//         40
-//       )
-//     )
-//   );
-// };
-// goDo();
