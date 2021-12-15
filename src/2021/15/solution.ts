@@ -124,23 +124,19 @@ export function aStar(
         // how short a path from start to finish can be if it goes through n.
         f: 0,
         // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
-        g: current.g + 1 + grid[adjPosition.row][adjPosition.col],
+        g: current.g + grid[adjPosition.row][adjPosition.col],
         h: 0,
         parent: current,
         position: adjPosition,
       };
-      let betterGScore = false;
+      const fScore = newNode.g + h(newNode, goal);
       if (!existingNode) {
         // first occurrence
-        betterGScore = true;
         newNode.h = h(newNode, goal);
         openSet.push(newNode);
-      } else {
-        // seen this node before
-        betterGScore = existingNode.g <= newNode.g;
       }
 
-      if (betterGScore) {
+      if (!existingNode || fScore > existingNode.f) {
         // This path to neighbor is better than any previous one. Record it!
         newNode.parent = current;
         newNode.f = newNode.g + h(newNode, goal);
@@ -153,12 +149,11 @@ export function aStar(
   throw new Error("Never reached goal");
 }
 
-export const solution = (input: string) => {
-  const grid = parseInput(input);
+export const solution = (input: string, part2?: boolean) => {
+  const grid = part2 ? constructFullGrid(parseInput(input)) : parseInput(input);
   const h = (current: AStarMeta, goal: Coord): number => {
-    const vertical = Math.abs(current.position.col - goal.col);
-    const horizontal = Math.abs(current.position.row - goal.row);
-    return vertical + horizontal;
+    // i dont need anything, only the g score to include the total sum cost
+    return 0;
   };
 
   const resultingPath = aStar(
@@ -196,7 +191,7 @@ const pathVisualizer = (
             -1
               ? rowIndex === lastPath.row && colIndex === lastPath.col
                 ? "O"
-                : val
+                : "X"
               : "-"
           )
           .join(" ")
@@ -210,3 +205,21 @@ const getPathVals = (
   path: { row: number; col: number }[],
   map: number[][]
 ): number[] => path.map(({ row, col }) => map[row][col]);
+
+export const constructFullGrid = (grid: number[][]): number[][] => {
+  const nextRow = (arr: number[], num: number) =>
+    arr.map((n) => (n + num > 9 ? (n + num) % 9 : n + num));
+  const transDown = (arr: number[][], num: number) =>
+    arr.map((row) => nextRow(row, num));
+  let newRows = grid;
+  let lastTile;
+  for (let i = 1; i < 5; i++) {
+    lastTile = grid.map((row) => nextRow(row, i));
+    newRows = newRows.map((r, index) => r.concat(lastTile[index]));
+  }
+  let newGrid = newRows;
+  for (let y = 1; y < 5; y++) {
+    newGrid = newGrid.concat(transDown(newRows, y));
+  }
+  return newGrid;
+};
