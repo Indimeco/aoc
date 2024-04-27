@@ -22,9 +22,6 @@ const filter2020Sum = (x: number) => (y: number[]) => y.filter(z => is2020(x + z
 
 const arrayWithoutIndex = <T>(array: T[], index: number): T[] => [...array.slice(0, index), ...array.slice(index + 1, -1)];
 
-/**
- * attempt one
- */
 export const solution2 = (input: string[]): number => {
     return pipe(
         input,
